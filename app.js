@@ -103,7 +103,7 @@ async function getCookiesForAllPages(siteurl)
 
 var baseurl = process.argv[2];
 if (!baseurl) {
-    console.error("Please provide the URL of the sitemap.");
+    console.error("Please provide the URL.");
     process.exit(1);
 }
 if (!/^https?:\/\//i.test(baseurl)) {
@@ -111,9 +111,12 @@ if (!/^https?:\/\//i.test(baseurl)) {
 }
 var siteurl = baseurl;
 var sitemapPath = process.argv[3];
-if(typeof sitemapPath === 'undefined' || sitemapPath.startsWith('-'))
-    siteurl += '/uploads/f/xml/sitemap_index.xml';
-else
-    siteurl += ('/' + sitemapPath);
+if((!siteurl.includes('sitemap')))
+{
+    if(typeof sitemapPath === 'undefined' || sitemapPath.startsWith('-'))
+        siteurl += '/uploads/f/xml/sitemap_index.xml';
+    else
+        siteurl += ('/' + sitemapPath);
+}
 
 getCookiesForAllPages(siteurl).catch(console.error);
