@@ -1,0 +1,48 @@
+[
+    {
+        "name": "ci_session",
+        "value": "gth5bnn9qhh7ctd2d31vgiqqbje2kla9",
+        "domain": "iklimist.org",
+        "path": "/",
+        "expires": 1700049377.848793,
+        "size": 42,
+        "httpOnly": true,
+        "secure": false,
+        "session": false,
+        "priority": "Medium",
+        "sameParty": false,
+        "sourceScheme": "Secure",
+        "sourcePort": 443
+    },
+    {
+        "name": "__cf_bm",
+        "value": "n6CmvXF_5FqYl.FvTkTmYi.P8jLzAaAaoFuzjSL817w-1700042179-0-Afnh/OH5TxCwbh447ufB8CV/hyu/o648EuFMkYGbDaf4LbQtMHkvAYySNHZ5ncrwzqLsuJNyEvGgYO5yP7Sn+Yw=",
+        "domain": ".onesignal.com",
+        "path": "/",
+        "expires": 1700043977.311912,
+        "size": 152,
+        "httpOnly": true,
+        "secure": true,
+        "session": false,
+        "sameSite": "None",
+        "priority": "Medium",
+        "sameParty": false,
+        "sourceScheme": "Secure",
+        "sourcePort": 443
+    },
+    {
+        "name": "viewed_news_list",
+        "value": "%5B%2242%22%5D",
+        "domain": "iklimist.org",
+        "path": "/",
+        "expires": 1734602219.341642,
+        "size": 30,
+        "httpOnly": false,
+        "secure": false,
+        "session": false,
+        "priority": "Medium",
+        "sameParty": false,
+        "sourceScheme": "Secure",
+        "sourcePort": 443
+    }
+]

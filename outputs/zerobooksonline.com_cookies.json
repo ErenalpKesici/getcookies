@@ -1,0 +1,18 @@
+[
+    {
+        "name": "ci_session",
+        "value": "81e440omghe6v2i1ik63lgk3fqf7ap2d",
+        "domain": "zerobooksonline.com",
+        "path": "/",
+        "expires": 1700040126.663568,
+        "size": 42,
+        "httpOnly": true,
+        "secure": false,
+        "session": false,
+        "sameSite": "Lax",
+        "priority": "Medium",
+        "sameParty": false,
+        "sourceScheme": "Secure",
+        "sourcePort": 443
+    }
+]
