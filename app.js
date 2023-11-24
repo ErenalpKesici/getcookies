@@ -4,6 +4,12 @@ const xml2js = require('xml2js');
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+var baseurl; // Assuming the URL is sent in the request body
+
 let allCookies = [];
 let totalUrls = 0;
 let proccessedPaths = [];
@@ -101,22 +107,45 @@ async function getCookiesForAllPages(siteurl)
     await browser.close();
 }
 
-var baseurl = process.argv[2];
-if (!baseurl) {
-    console.error("Please provide the URL.");
-    process.exit(1);
-}
-if (!/^https?:\/\//i.test(baseurl)) {
-    baseurl = 'https://' + baseurl;
-}
-var siteurl = baseurl;
-var sitemapPath = process.argv[3];
-if((!siteurl.includes('sitemap')))
-{
-    if(typeof sitemapPath === 'undefined' || sitemapPath.startsWith('-'))
-        siteurl += '/uploads/f/xml/sitemap_index.xml';
-    else
-        siteurl += ('/' + sitemapPath);
-}
+// var baseurl = process.argv[2];
+// if (!baseurl) {
+//     console.error("Please provide the URL.");
+//     process.exit(1);
+// }
+// if (!/^https?:\/\//i.test(baseurl)) {
+//     baseurl = 'https://' + baseurl;
+// }
+// var siteurl = baseurl;
+// var sitemapPath = process.argv[3];
+// if((!siteurl.includes('sitemap')))
+// {
+//     if(typeof sitemapPath === 'undefined' || sitemapPath.startsWith('-'))
+//         siteurl += '/uploads/f/xml/sitemap_index.xml';
+//     else
+//         siteurl += ('/' + sitemapPath);
+// }
 
-getCookiesForAllPages(siteurl).catch(console.error);
+// getCookiesForAllPages(siteurl).catch(console.error);
+
+app.post('/getCookies', async (req, res) => {
+    if (!baseurl) {
+        return res.status(400).json({ error: "URL not provided" });
+    }
+
+    try {
+        await getCookiesForAllPages(baseurl);
+        const indexUrl = new URL(baseurl);
+        const outputPath = 'outputs/' + indexUrl.host + '_cookies.json';
+        const cookies = fs.readFileSync(outputPath, 'utf8');
+        return res.json({ cookies });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// Start the Express server
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
