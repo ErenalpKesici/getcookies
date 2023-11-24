@@ -18,7 +18,7 @@ const default_sitemap_index_path = '/uploads/f/xml/sitemap_index.xml';
 
 async function getCookiesForPage(page, url) {
     await page.goto(url);
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
     const client = await page.target().createCDPSession();
     await client.send('Network.enable');
     const { cookies } = await client.send('Network.getAllCookies');
