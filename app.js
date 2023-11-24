@@ -17,7 +17,8 @@ let proccessedPaths = [];
 const default_sitemap_index_path = '/uploads/f/xml/sitemap_index.xml';
 
 async function getCookiesForPage(page, url) {
-    await page.goto(url);
+    console.log('Proccessing: ' + _url)
+    await page.goto(url, { timeout: 60000 });
     // await page.waitForTimeout(5000);
     const client = await page.target().createCDPSession();
     await client.send('Network.enable');
@@ -65,7 +66,6 @@ async function proccessSitemapUrls(urls, page)
                 allCookies.push(cookie);
             }
         });
-        console.log('Proccessed: ' + _url)
     }
 }
 
