@@ -8,16 +8,16 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
-var baseurl; // Assuming the URL is sent in the request body
+var baseurl;
 
 let allCookies = [];
 let totalUrls = 0;
 let proccessedPaths = [];
 
+const default_sitemap_index_path = '/uploads/f/xml/sitemap_index.xml';
+
 async function getCookiesForPage(page, url) {
     await page.goto(url);
-
-    // Get cookies
     await page.waitForTimeout(5000);
     const client = await page.target().createCDPSession();
     await client.send('Network.enable');
@@ -55,16 +55,13 @@ async function proccessSitemapUrls(urls, page)
     for (let url of urls) {
         const _url = new URL(url);
         const urlPath = _url.pathname.split('/')[1].split('-')[0];
-        if(process.argv.indexOf('-f') == -1)
-        {
-            if (proccessedPaths.includes(urlPath))
-                continue;
-            proccessedPaths.push(urlPath)
-        }
+        if (proccessedPaths.includes(urlPath))
+            continue;
+        proccessedPaths.push(urlPath)
         const cookies = await getCookiesForPage(page, url);
         cookies.forEach(cookie => {
             // Only add the cookie if it's not already in the array
-            if (!allCookies.find(c => c.name === cookie.name)) {
+            if (!allCookies.find(c => c.name === cookie.name && c.domain === cookie.domain)) {
                 allCookies.push(cookie);
             }
         });
@@ -74,8 +71,23 @@ async function proccessSitemapUrls(urls, page)
 
 async function getCookiesForAllPages(siteurl) 
 {
-    const browser = await puppeteer.launch({ 'headless': 'new' });
+    const browser = await puppeteer.launch({ 'headless': 'true' });
     const page = await browser.newPage();
+    
+    if(allCookies.length == 0)
+    {
+        await axios.get(siteurl + default_sitemap_index_path)
+            .then(response => {
+                const html = response.data;
+                const regex = new RegExp(`\\bpbl-e404\\b`);
+                const is_404 = regex.test(html);
+                if (!is_404)
+                    siteurl += default_sitemap_index_path;
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
     // Get sitemaps 
     const items = await getUrlsFromSitemap(siteurl, page);
     if(items != true)
@@ -107,39 +119,21 @@ async function getCookiesForAllPages(siteurl)
     await browser.close();
 }
 
-// var baseurl = process.argv[2];
-// if (!baseurl) {
-//     console.error("Please provide the URL.");
-//     process.exit(1);
-// }
-// if (!/^https?:\/\//i.test(baseurl)) {
-//     baseurl = 'https://' + baseurl;
-// }
-// var siteurl = baseurl;
-// var sitemapPath = process.argv[3];
-// if((!siteurl.includes('sitemap')))
-// {
-//     if(typeof sitemapPath === 'undefined' || sitemapPath.startsWith('-'))
-//         siteurl += '/uploads/f/xml/sitemap_index.xml';
-//     else
-//         siteurl += ('/' + sitemapPath);
-// }
-
-// getCookiesForAllPages(siteurl).catch(console.error);
-
 app.post('/getCookies', async (req, res) => {
     baseurl = req.body.url;
     if (!baseurl) {
         return res.status(400).json({ error: "URL not provided" });
     }
-
     try {
+        allCookies = [];
+        proccessedPaths = [];
         await getCookiesForAllPages(baseurl);
         const indexUrl = new URL(baseurl);
         const outputPath = 'outputs/' + indexUrl.host + '_cookies.json';
         const cookies = fs.readFileSync(outputPath, 'utf8');
         return res.json({ cookies });
-    } catch (error) {
+    } 
+    catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal server error" });
     }
