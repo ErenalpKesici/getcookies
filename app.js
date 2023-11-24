@@ -128,6 +128,7 @@ async function getCookiesForAllPages(siteurl)
 // getCookiesForAllPages(siteurl).catch(console.error);
 
 app.post('/getCookies', async (req, res) => {
+    baseurl = req.body.url;
     if (!baseurl) {
         return res.status(400).json({ error: "URL not provided" });
     }
